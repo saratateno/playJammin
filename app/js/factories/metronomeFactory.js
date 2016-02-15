@@ -141,6 +141,14 @@ jammin.factory('MetronomeFactory', ['SocketFactory', function(SocketFactory) {
     Tone.Transport.stop();
   }
 
+  metronomeFactory.muteSync = function() {
+    syncTransport.mute = true;
+  }
+
+  metronomeFactory.unmuteSync = function() {
+    syncTransport.mute = false;
+  }
+
   metronomeFactory.unmute = function() {
     kickPart.mute = false;
     bassPart.mute = false;

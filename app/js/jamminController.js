@@ -8,29 +8,40 @@ jammin.controller('JamminController',
   self.statusLabel = 'not connected';
   self.metronomeStatus = 'off';
 
-  SocketFactory.on('connect', function() {
-    self.statusLabel = 'connected';
-  });
+  self.setupSockets = function(callback) {
+    SocketFactory.on('connect', function() {
+      self.statusLabel = 'connected';
+    });
 
-  SocketFactory.on('assign socket id', function(id) {
-    self.mySocketId = id;
-  });
+    SocketFactory.on('assign socket id', function(id) {
+      self.mySocketId = id;
+    });
 
-  SocketFactory.on('update users', function(users) {
-    UserFactory.users = users;
-    self.otherUsers = UserFactory.otherUsers(self.nickname);
-  });
+    SocketFactory.on('update users', function(users) {
+      UserFactory.users = users;
+      self.otherUsers = UserFactory.otherUsers(self.nickname);
+      if (UserFactory.users.length !== 0) {
+        if (UserFactory.getSelf(self.mySocketId).masterUser === false) {
+          MetronomeFactory.muteSync();
+        } else {
+          MetronomeFactory.unmuteSync();
+        }
+      }
+    });
 
-  SocketFactory.on('start transport', function() {
-    MetronomeFactory.stopTransport();
-    MetronomeFactory.startTransport();
-  });
+    SocketFactory.on('start transport', function() {
+      MetronomeFactory.stopTransport();
+      MetronomeFactory.startTransport();
+    });
 
-  SocketFactory.on('play sound', function(tone, color) {
-    console.log('playing', tone, color);
-    SoundFactory.playSound(tone);
-    self.addColor(color, tone);
-  });
+    SocketFactory.on('play sound', function(tone, color) {
+      console.log('playing', tone, color);
+      SoundFactory.playSound(tone);
+      self.addColor(color, tone);
+    });
+
+    callback();
+  }
 
   self.addColor = function(bkgrdcolor, key) {
     var isWhite = (key.indexOf('#') === -1)
@@ -48,10 +59,12 @@ jammin.controller('JamminController',
   }
 
   self.startJammin = function() {
-    self.toggleMetronome();
-    var user = UserFactory.createUser(self.nickname);
-    console.log('user',user);
-    SocketFactory.emit('new user', user);
+    self.setupSockets(function(){
+      self.toggleMetronome();
+      var user = UserFactory.createUser(self.nickname);
+      console.log('user',user);
+      SocketFactory.emit('new user', user);
+    });
   }
 
   self.toggleMetronome = function() {

@@ -23,5 +23,14 @@ jammin.factory('UserFactory', [function() {
     });
   };
 
+  userFactory.getSelf = function(socketId) {
+    console.log(socketId, userFactory.users)
+    var me = userFactory.users.filter(function(user) {
+      return user.socketId === socketId;
+    });
+    console.log(me);
+    return me[0];
+  }
+
   return userFactory;
 }]);

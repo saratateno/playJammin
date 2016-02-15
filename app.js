@@ -23,8 +23,6 @@ app.get('/', function(request, response) {
 
 io.on('connection', function(socket) {
   console.log('user connected');
-  socket.emit('assign socket id', socket.id)
-  socket.emit('update users', users);
 
   socket.on('disconnect', function() {
     userHelpers.removeUser(users, socket.id, function(newUsers) {
@@ -35,17 +33,21 @@ io.on('connection', function(socket) {
   });
 
   socket.on('sync', function() {
-    console.log('starting transport!!!!!!!!!!')
+    console.log('syncing transport')
     io.emit('start transport');
   });
 
   socket.on('new user', function(user) {
     console.log('newuser',users);
+    socket.emit('assign socket id', socket.id)
     user.socketId = socket.id;
-    users.push(user);
-    if (users.length === 1) {
+    if (users.length === 0) {
       socket.emit('start transport')
+      user.masterUser = true;
+    } else {
+      user.masterUser = false;
     }
+    users.push(user);
     io.emit('update users', users);
     console.log(users);
   });
