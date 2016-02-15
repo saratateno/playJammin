@@ -21,6 +21,10 @@ jammin.controller('JamminController',
     self.otherUsers = UserFactory.otherUsers(self.nickname);
   });
 
+  SocketFactory.on('start transport', function() {
+    MetronomeFactory.startTransport();
+  });
+
   SocketFactory.on('play sound', function(tone, color) {
     console.log('playing', tone, color);
     SoundFactory.playSound(tone);
