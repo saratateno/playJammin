@@ -34,6 +34,10 @@ io.on('connection', function(socket) {
     });
   });
 
+  socket.on('sync', function() {
+    io.emit('start transport');
+  });
+
   socket.on('new user', function(user) {
     console.log('newuser',users);
     user.socketId = socket.id;

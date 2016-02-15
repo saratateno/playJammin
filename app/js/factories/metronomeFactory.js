@@ -1,4 +1,4 @@
-jammin.factory('MetronomeFactory', [function() {
+jammin.factory('MetronomeFactory', ['SocketFactory', function(SocketFactory) {
   var metronomeFactory = {};
 
   //HATS
@@ -127,6 +127,11 @@ jammin.factory('MetronomeFactory', [function() {
   Tone.Transport.loop = true;
 
   Tone.Transport.bpm.value = 120;
+
+  var syncTransport = new Tone.Part(function(time){
+    SocketFactory.emit('sync');
+    console.log('sync message from client');
+  }, ["0"]).start(0);
 
   metronomeFactory.startTransport = function() {
     Tone.Transport.start();
