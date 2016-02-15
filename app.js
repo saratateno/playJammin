@@ -35,6 +35,7 @@ io.on('connection', function(socket) {
   });
 
   socket.on('sync', function() {
+    console.log('starting transport!!!!!!!!!!')
     io.emit('start transport');
   });
 
