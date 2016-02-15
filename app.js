@@ -3,6 +3,8 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var userHelpers = require('./serverHelpers/userHelpers.js');
+// var tone = require('tone');
+// var metronomeFactory = require('./js/factories/metronomeFactory.js');
 
 var users = [];
 
@@ -36,6 +38,9 @@ io.on('connection', function(socket) {
     console.log('newuser',users);
     user.socketId = socket.id;
     users.push(user);
+    if (users.length === 1) {
+      socket.emit('start transport')
+    }
     io.emit('update users', users);
     console.log(users);
   });
