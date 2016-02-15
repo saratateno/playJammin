@@ -22,6 +22,7 @@ jammin.controller('JamminController',
   });
 
   SocketFactory.on('start transport', function() {
+    MetronomeFactory.stopTransport();
     MetronomeFactory.startTransport();
   });
 
